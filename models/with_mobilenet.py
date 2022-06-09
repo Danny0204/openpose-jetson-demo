@@ -120,4 +120,4 @@ class PoseEstimationWithMobileNet(nn.Module):
             stages_output.extend(
                 refinement_stage(torch.cat([backbone_features, stages_output[-2], stages_output[-1]], dim=1)))
 
-        return stages_output
+        return stages_output[-2:]

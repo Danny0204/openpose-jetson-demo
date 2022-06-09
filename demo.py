@@ -157,6 +157,17 @@ if __name__ == '__main__':
     checkpoint = torch.load(args.checkpoint_path, map_location='cpu')
     load_state(net, checkpoint)
 
+    dummy_input = torch.randint(0, 255, (1, 3, 256, 256)).type(torch.float32)
+    torch.onnx.export(net, dummy_input, 'pose_256.onnx',
+                      export_params=True,
+                      opset_version=11,
+                      do_constant_folding=True,
+                      input_names=['image'],
+                      output_names=['heatmap', 'paf']
+                      )
+    # directly exit the program
+    exit(0)
+
     frame_provider = ImageReader(args.images)
     if args.video != '':
         frame_provider = VideoReader(args.video)
