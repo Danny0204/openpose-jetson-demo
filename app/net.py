@@ -18,7 +18,7 @@ class PoseNetONNX:
         self.ort_session = ort.InferenceSession(onnx_file, providers=ort_providers)
 
         self.input_size = (256, 256)
-        self.upsampling_ratio = 4
+        self.upsampling_ratio = 2
         self.pose_score_threshold = pose_score_threshold
 
     def inference(self, image: np.ndarray):
