@@ -1,4 +1,5 @@
 import argparse
+import time
 
 import cv2
 import numpy as np
@@ -92,6 +93,7 @@ def run_demo(net, image_provider, height_size, cpu, track, smooth):
         orig_img = img.copy()
         heatmaps, pafs, scale, pad = infer_fast(net, img, height_size, stride, upsample_ratio, cpu)
 
+        _t = time.time()
         total_keypoints_num = 0
         all_keypoints_by_type = []
         for kpt_idx in range(num_keypoints):  # 19th for bg
@@ -112,6 +114,7 @@ def run_demo(net, image_provider, height_size, cpu, track, smooth):
                     pose_keypoints[kpt_id, 1] = int(all_keypoints[int(pose_entries[n][kpt_id]), 1])
             pose = Pose(pose_keypoints, pose_entries[n][18])
             current_poses.append(pose)
+        print('pose time: ', time.time() - _t)
 
         if track:
             track_poses(previous_poses, current_poses, smooth=smooth)
@@ -157,16 +160,16 @@ if __name__ == '__main__':
     checkpoint = torch.load(args.checkpoint_path, map_location='cpu')
     load_state(net, checkpoint)
 
-    dummy_input = torch.randint(0, 255, (1, 3, 256, 256)).type(torch.float32)
-    torch.onnx.export(net, dummy_input, 'pose_256.onnx',
-                      export_params=True,
-                      opset_version=11,
-                      do_constant_folding=True,
-                      input_names=['image'],
-                      output_names=['heatmap', 'paf']
-                      )
-    # directly exit the program
-    exit(0)
+    # dummy_input = torch.randint(0, 255, (1, 3, 256, 256)).type(torch.float32)
+    # torch.onnx.export(net, dummy_input, 'pose_256.onnx',
+    #                   export_params=True,
+    #                   opset_version=11,
+    #                   do_constant_folding=True,
+    #                   input_names=['image'],
+    #                   output_names=['heatmap', 'paf']
+    #                   )
+    # # directly exit the program
+    # exit(0)
 
     frame_provider = ImageReader(args.images)
     if args.video != '':

@@ -1,3 +1,5 @@
+import time
+
 import cv2
 import numpy as np
 
@@ -16,11 +18,15 @@ if __name__ == '__main__':
         if not ret:
             print("Can't receive frame (stream end?). Exiting ...")
             break
-        frame = cv2.resize(frame, (256, 256))
-        frame_t = frame.copy().astype("float32").transpose(2, 0, 1)
-        frame_t = (frame_t - 128) / 256
-        frame_t = np.expand_dims(frame_t, axis=0)
 
-        poses = net.inference_pose(frame_t)
+        resize_ratio = (frame.shape[1] / 256, frame.shape[0] / 256)
+        frame_r = cv2.resize(frame, (256, 256), interpolation=cv2.INTER_AREA)
+        frame_r = frame_r.astype("float32").transpose(2, 0, 1)
+        frame_r = (frame_r - 128) / 256
+        frame_r = np.expand_dims(frame_r, axis=0)
 
-        window.show_image_with_pose(frame, poses[0] if len(poses) > 0 else None)
+        _to = time.time()
+        heatmaps, pafs = net.inference(frame_r)
+        print('overall time: ', time.time() - _to)
+
+        window.show_image_with_heatmaps(frame, heatmaps, pafs, net.upsampling_ratio, resize_ratio)
