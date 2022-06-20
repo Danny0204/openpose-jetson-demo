@@ -34,7 +34,7 @@ class PoseNetONNX:
         pafs = np.transpose(pafs.squeeze(), (1, 2, 0))
         pafs = cv2.resize(pafs, (0, 0), fx=self.upsampling_ratio, fy=self.upsampling_ratio,
                           interpolation=cv2.INTER_CUBIC)
-        print('inference time: ', time.time() - _t1)
+        # print('inference time: ', time.time() - _t1)
 
         return heatmaps, pafs
 
@@ -72,5 +72,5 @@ class PoseNetONNX:
                     pose_keypoints[kpt_id, 1] = int(all_keypoints[int(pose_entries[n][kpt_id]), 1])
             pose = Pose(pose_keypoints, pose_entries[n][18])
             current_poses.append(pose)
-        print('postprocess time: ', time.time() - _t2)
+        # print('postprocess time:', time.time() - _t2)
         return current_poses

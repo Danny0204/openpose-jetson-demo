@@ -27,6 +27,6 @@ if __name__ == '__main__':
 
         _to = time.time()
         heatmaps, pafs = net.inference(frame_r)
-        print('overall time: ', time.time() - _to)
+        # print('overall time:', time.time() - _to)
 
         window.show_image_with_heatmaps(frame, heatmaps, pafs, net.upsampling_ratio, resize_ratio)
