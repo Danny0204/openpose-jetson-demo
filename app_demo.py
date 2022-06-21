@@ -7,7 +7,9 @@ from app.net import PoseNetONNX
 from app.preview import PreviewWindow
 
 if __name__ == '__main__':
-    net = PoseNetONNX(onnx_file='pose_256.onnx',
+    resize_size = 512
+
+    net = PoseNetONNX(onnx_file='openpose%d.onnx' % resize_size,
                       ort_providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
     window = PreviewWindow()
     window.start()
@@ -19,8 +21,8 @@ if __name__ == '__main__':
             print("Can't receive frame (stream end?). Exiting ...")
             break
 
-        resize_ratio = (frame.shape[1] / 256, frame.shape[0] / 256)
-        frame_r = cv2.resize(frame, (256, 256), interpolation=cv2.INTER_AREA)
+        resize_ratio = (frame.shape[1] / resize_size, frame.shape[0] / resize_size)
+        frame_r = cv2.resize(frame, (resize_size, resize_size), interpolation=cv2.INTER_AREA)
         frame_r = frame_r.astype("float32").transpose(2, 0, 1)
         frame_r = (frame_r - 128) / 256
         frame_r = np.expand_dims(frame_r, axis=0)

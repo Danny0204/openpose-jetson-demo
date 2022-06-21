@@ -11,7 +11,7 @@ from modules.pose import Pose
 
 
 class PreviewWindow:
-    def __init__(self, src_weight: float = 0.6, pose_weight: float = 0.4):
+    def __init__(self, src_weight: float = 0.4, pose_weight: float = 0.6):
         self.window_name = 'OpenPose'
         self.src_weight = src_weight
         self.pose_weight = pose_weight
@@ -69,7 +69,7 @@ class PreviewWindow:
             cv2.rectangle(canvas, (pose.bbox[0], pose.bbox[1]),
                           (pose.bbox[0] + pose.bbox[2], pose.bbox[1] + pose.bbox[3]), (0, 255, 0))
         img_to_show = cv2.addWeighted(image, src_weight, canvas, pose_weight, 0)
-        # img_to_show = cv2.resize(img_to_show, (0, 0), fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
+        img_to_show = cv2.resize(img_to_show, (0, 0), fx=2, fy=2, interpolation=cv2.INTER_AREA)
         # print('draw time:', time.time() - _t4)
         cv2.imshow(self.window_name, img_to_show)
         key = cv2.waitKey(10)
