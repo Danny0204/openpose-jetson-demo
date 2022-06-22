@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 
 from app.animation import Animation
+from app.server import PoseServer
 from modules.keypoints import extract_keypoints, group_keypoints
 from modules.pose import Pose
 
@@ -23,6 +24,10 @@ class PreviewWindow:
 
         self.is_capturing = False
         self._buffer = None
+
+        self._server_queue = queue.Queue()
+        self._server = PoseServer(self._server_queue)
+        self._server.start()
 
     def show_image_with_heatmaps(self, image, heatmaps, pafs, upsampling_ratio, resize_ratio):
         self._queue.put((image, heatmaps, pafs, upsampling_ratio, resize_ratio))
@@ -96,6 +101,8 @@ class PreviewWindow:
                 image, heatmaps, pafs, upsampling_ratio, resize_ratio = result
                 poses = self._extract_poses(heatmaps, pafs, upsampling_ratio, resize_ratio)
                 pose = poses[0] if len(poses) > 0 else None
+                if pose is not None:
+                    self._server_queue.put(pose)
                 self._show_image_with_pose(image, pose, src_weight, pose_weight)
             self._queue.task_done()
 

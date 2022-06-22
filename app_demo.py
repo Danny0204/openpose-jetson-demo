@@ -9,12 +9,12 @@ from app.preview import PreviewWindow
 if __name__ == '__main__':
     resize_size = 512
 
-    net = PoseNetONNX(onnx_file='openpose%d.onnx' % resize_size,
+    net = PoseNetONNX(onnx_file='openpose_%d.onnx' % resize_size,
                       ort_providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
     window = PreviewWindow()
     window.start()
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
